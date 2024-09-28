@@ -1,0 +1,35 @@
+def garden_count(graph, n, m):
+    counter = 0
+
+    def dfs(x, y):
+        #Рекурсивный поиск в глубину (DFS) для обработки текущей грядки
+        stack = [(x, y)]
+        while stack:
+            x, y = stack.pop()
+            if graph[x][y] == '#':
+                graph[x][y] = '.'  # Помечаем клетку как посещённую
+                # Добавляем соседние клетки в стек, если они внутри границ
+                if x > 0:
+                    stack.append((x - 1, y))
+                if y > 0:
+                    stack.append((x, y - 1))
+                if x < n - 1:
+                    stack.append((x + 1, y))
+                if y < m - 1:
+                    stack.append((x, y + 1))
+
+    for i in range(n):
+        for j in range(m):
+            if graph[i][j] == '#':  # Начинаем поиск с новой грядки
+                counter += 1
+                dfs(i, j)  # Обрабатываем всю грядку с помощью DFS
+
+    return counter
+
+
+
+with open('input.txt', "r") as file, open("output.txt", "w") as output_file:
+        n, m = map(int, file.readline().split())  # Читаем размеры сада
+        garden = [list(file.readline().strip()) for _ in range(n)]  # Читаем садовую карту
+        result = garden_count(garden, n, m)
+        output_file.write(str(result))
