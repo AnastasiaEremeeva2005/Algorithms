@@ -1,0 +1,38 @@
+def dfs_cycle(graph, u, visited, visiting):
+    visited[u] = True  # Помечаем узел как посещенный
+    visiting[u] = True  # Помечаем узел как находящийся в процессе обхода
+
+    for neighbor in graph[u]:
+        if not visited[neighbor]:  # Если соседний узел не был посещен
+            if dfs_cycle(graph, neighbor, visited, visiting):  # Рекурсивно проверяем его
+                return True
+        elif visiting[neighbor]:  # Если соседний узел находится в процессе обхода
+            return True  # Найден цикл
+
+    visiting[u] = False  # Убираем узел из списка текущего обхода
+    return False  # Циклов не найдено
+
+
+
+with open("input.txt", "r") as input_file, open("output.txt", "w") as output_file:
+        n, m = map(int, input_file.readline().split())  # Читаем количество курсов и зависимостей
+        graph = [[] for _ in range(n)]  # Создаем граф
+
+        for _ in range(m):
+            u, v = map(int, input_file.readline().split())
+            graph[u - 1].append(v - 1)  # Добавляем ребро в граф (u перед v)
+
+        visited = [False] * n  # Список посещенных узлов
+        visiting = [False] * n  # Список узлов в текущем обходе
+
+        has_cycle = False  # Флаг для проверки наличия цикла
+        for node in range(n):
+            if not visited[node]:  # Если узел еще не посещен
+                if dfs_cycle(graph, node, visited, visiting):
+                    has_cycle = True
+                    break  # Цикл найден
+
+        # Записываем результат в файл
+        output_file.write('1' if has_cycle else '0')
+
+
