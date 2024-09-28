@@ -1,0 +1,48 @@
+# Чтение входных данных
+with open('input.txt', 'r') as file_input:
+        n, m = map(int, file_input.readline().split())  # Читаем количество вершин и рёбер
+        order = []  # Порядок завершения вершин
+        visited = [False for _ in range(n)]  # Массив для отслеживания посещённых вершин
+        g = [[] for _ in range(n)]  # список смежности для графа
+        g_reverse = [[] for _ in range(n)]  # Обратный граф
+
+        # Чтение рёбер
+        for _ in range(m):
+            a, b = map(int, file_input.readline().split())
+            g[a - 1].append(b - 1)  # Обычный граф
+            g_reverse[b - 1].append(a - 1)  # Обратный граф
+
+        # Первый проход DFS: добавляем вершины в порядок по завершению их обработки
+        def dfs1(u: int) -> None:
+            visited[u] = True
+            for neighbor in g[u]:
+                if not visited[neighbor]:
+                    dfs1(neighbor)
+            order.append(u)
+
+        # Второй проход DFS по обратному графу
+        def dfs2(v: int) -> None:
+            visited[v] = True
+            for neighbor in g_reverse[v]:
+                if not visited[neighbor]:
+                    dfs2(neighbor)
+
+        # Первый проход: выполняем DFS для каждой непосещенной вершины
+        for i in range(n):
+            if not visited[i]:
+                dfs1(i)
+
+        # Сброс visited перед вторым проходом
+        visited = [False for _ in range(n)]
+        k = 0  # Счётчик компонентов сильной связности
+
+        # Второй проход: обработка вершин в порядке убывания их завершения
+        for i in range(n):
+            v = order[n - 1 - i]  # Берем вершины в обратном порядке завершения DFS
+            if not visited[v]:
+                k += 1  # Увеличиваем счётчик компонент сильной связности
+                dfs2(v)
+
+        # Запись результата в выходной файл
+        with open('output.txt', 'w') as file_output:
+            file_output.write(str(k))
