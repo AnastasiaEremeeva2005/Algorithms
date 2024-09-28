@@ -1,0 +1,55 @@
+class Node:
+    def __init__(self, key):
+        self.value = key  # val — значение узла (ключ)
+        self.left = None #left — ссылка на левое поддерево
+        self.right = None#right — ссылка на правое поддерево
+
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key):
+        if self.root is None:#Если дерево пустое, создается новый узел с ключом key и он становится корнем
+            self.root = Node(key)
+        else:#Если корень уже существует, рекрсивно вызываем  метод insert_node, чтобы  найти место для нового узла
+            self.insert_node(self.root, key)
+
+    def insert_node(self, root, key): #ищем правильное место для вставки нового узла в дерево
+        if key < root.value: #Если ключ меньше значения текущего узла, проверяем левое поддерево
+            if root.left is None: #Если в левом поддереве нет узла, создается новый узел
+                root.left = Node(key)
+            else:
+                self.insert_node(root.left, key)
+        elif key > root.value:#Если ключ больше значения узла, поиск продолжается в правом поддерев
+            if root.right is None:
+                root.right = Node(key)
+            else:
+                self.insert_node(root.right, key)
+
+    def find(self, root, key, min_greater):
+        if root is None:
+            return 0 if min_greater == float('inf') else min_greater
+        if root.value > key:
+            min_greater = min(min_greater, root.value)
+            return self.find(root.left, key, min_greater)
+        else:
+            return self.find(root.right, key, min_greater)
+
+    def find_min(self, key):
+        return self.find(self.root, key, float('inf'))
+
+
+with open('input.txt', 'r') as input_file, open('output.txt', 'w') as output_file:
+    commands = input_file.readlines()
+    result = []
+    bst = BST() #Создается новое дерево BST
+    for command in commands:
+        if command.startswith('+'): #добавляем элемент в дерево с помощью метода insert
+            _, x = command.split()
+            bst.insert(int(x))
+        elif command.startswith('>'): #поиск минимального элемента, большего указанного числа, с помощью метода find_min
+            _, x = command.split()
+            result.append(bst.find_min(int(x)))
+    for elem in result:
+        output_file.write(f'{elem}\n')
