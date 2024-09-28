@@ -1,0 +1,22 @@
+def BST(tree_nodes, i_node, low_lim, upper_lim): #функция проверяет, находится ли каждое значение в своем допустимом диапазоне, соблюдая правила BST
+    if i_node == -1: #Если текущий узел не существует, функция возвращает True, т.к отсутствие узла не нарушает свойства BST
+        return True
+    if tree_nodes[i_node][0] < low_lim:#Если ключ текущего узла меньше low, это означает, что он не может находиться в допустимом диапазоне
+        return False
+    if tree_nodes[i_node][0] >= upper_lim:#Если ключ текущего узла больше или равен high, это также нарушает свойства BST
+        return False
+    return (BST(tree_nodes, tree_nodes[i_node][1], low_lim, tree_nodes[i_node][0]) and #Вызываем BST для левого поддерева с обновленным верхним пределом и для правого с обновленым нижним пределом
+            BST(tree_nodes, tree_nodes[i_node][2], tree_nodes[i_node][0], upper_lim))
+
+def check_if_BST(nodes):
+     if len(nodes) == 0 or BST(nodes, 0, -2 ** 32, 2 ** 32): #пустое дерево считается корректным BST.
+        return 'CORRECT'
+     else:
+         return 'INCORRECT'
+
+
+
+with open('input.txt', 'r') as input_file, open('output.txt', 'w') as output_file:
+        n = int(input_file.readline())#Считывается количество узлов n.
+        nodes = [list(map(int, input_file.readline().split())) for _ in range(n)]#добавляем все узлы, считанные из файла, разбивая каждый  на три числа (ключ, левый и правый индекс)
+        output_file.write(check_if_BST(nodes))
