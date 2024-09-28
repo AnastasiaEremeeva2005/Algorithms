@@ -1,0 +1,67 @@
+class TreeNode: #класс для представления узлов дерева.
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+        self.size = 1  # размер поддерева
+
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def _insert(self, node, key): #Рекурсивный метод для вставки нового ключа в дерево
+        if node is None: #Если текущий узел None, создаем новый узел с ключом и возвращаем его
+            return TreeNode(key)
+        if key < node.key:#Если key меньше node.key, рекурсивно вставляем ключ в левое поддерево
+            node.left = self._insert(node.left, key)
+        elif key > node.key:#Если key больше node.key, вставляем в правое поддерево
+            node.right = self._insert(node.right, key)
+        else:#Если ключ уже существует, просто возвращаем текущий узел (ничего не добавляем)
+            return node
+
+        # Обновляем размер поддерева
+        node.size = 1 + self._get_size(node.left) + self._get_size(node.right)
+        return node
+
+    def insert(self, key):
+        self.root = self._insert(self.root, key)
+
+    def _get_size(self, node): #Возвращает размер поддерева узла
+        if node is None:
+            return 0
+        return node.size
+
+    def _kth_smallest(self, node, k):
+        if node is None:
+            return None
+
+        left_size = self._get_size(node.left) #Получаем размер левого поддерева текущего узла с помощью _get_size
+
+        if k <= left_size:#Если k меньше или равно left_size, рекурсивно ищем k-й элемент в левом поддереве
+            return self._kth_smallest(node.left, k)
+        elif k == left_size + 1:#Если k равно left_size + 1, это значит, что текущий узел — k-й элемент, и мы возвращаем его ключ
+            return node.key
+        else:#Если k больше left_size + 1, продолжаем искать в правом поддереве, при этом меняя значение k
+            return self._kth_smallest(node.right, k - left_size - 1)
+
+    def kth_smallest(self, k):
+        return self._kth_smallest(self.root, k)
+
+
+bst = BST()
+results = []
+with open('input.txt', 'r') as input_file:
+    for line in input_file:
+        command = line.strip().split()
+        if command[0] == '+':
+            x = int(command[1])
+            bst.insert(x)
+        elif command[0] == '?':
+            k = int(command[1])
+            result = bst.kth_smallest(k)
+            results.append(result)
+
+with open('output.txt', 'w') as output_file:
+    for result in results:
+        output_file.write(f"{result}\n")
