@@ -1,0 +1,44 @@
+from collections import deque
+
+
+def is_bipartite(graph, n):
+    color = [-1] * n  # Массив для хранения цветов (-1 означает, что вершина не окрашена)
+
+    def bfs(start):
+        queue = deque([start])
+        color[start] = 0  # Красим первую вершину в цвет 0
+
+        while queue:
+            u = queue.popleft()
+            for v in graph[u]:
+                if color[v] == -1:  # Если вершина ещё не окрашена
+                    color[v] = 1 - color[u]  # Красим её в противоположный цвет
+                    queue.append(v)
+                elif color[v] == color[u]:  # Если сосед имеет тот же цвет
+                    return False  # Граф не двудольный
+
+        return True
+
+    for i in range(n):
+        if color[i] == -1:  # Если вершина не посещена
+            if not bfs(i):  # Если не удалось раскрасить граф
+                return False  # Граф не двудольный
+
+    return True  # Граф двудольный
+
+
+# Чтение графа из файла
+with open("input.txt", "r") as input_file,open("output.txt", "w") as output_file:
+    n, m = map(int, input_file.readline().split()) #Считываем количество вершин n и количество рёбер m.
+    graph = [[] for _ in range(n)]
+    #Для каждого из m рёбер считываем две вершины u и v и добавляем их в граф.
+    for _ in range(m): #Уменьшаем значения на 1 для перехода от 1-индексации к 0-индексации.
+        u, v = map(int, input_file.readline().split())
+        graph[u - 1].append(v - 1)
+        graph[v - 1].append(u - 1)  # Граф неориентированный
+
+    # Проверяем, является ли граф двудольным
+    if is_bipartite(graph, n):
+        output_file.write(str(1))
+    else:
+        output_file.write(str(0))
