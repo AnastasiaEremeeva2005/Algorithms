@@ -1,0 +1,33 @@
+def labyrinth(graph, colors):
+    # Начинаем с вершины 1
+    node = 1
+    for color in colors:
+        # Проверяем, есть ли ребро текущего цвета из текущей вершины
+        if color in graph[node]:
+            node = graph[node][color]  # Переходим в следующую вершину
+        else:
+            return 'INCORRECT'  # Если переход невозможен, возвращаем INCORRECT
+    return node  # Возвращаем конечный узел после всех переходов
+
+
+# Чтение входных данных
+with open("input.txt", "r", encoding='utf-8') as input_file, open("output.txt", "w", encoding='utf-8') as output_file:
+    # Считываем количество вершин (n) и рёбер (m)
+    n, m = map(int, input_file.readline().split())
+
+    # Инициализируем граф как словарь, где ключ — вершина, а значение — словарь соседей с цветами рёбер
+    graph = {i: {} for i in range(1, n + 1)}
+
+    # Считываем m рёбер
+    for _ in range(m):
+        u, v, c = map(int, input_file.readline().split())
+        # Добавляем ребро с цветом c между вершинами u и v в обоих направлениях
+        graph[u][c] = v
+        graph[v][c] = u
+
+    # Считываем последовательность цветов
+    colors = list(map(int, input_file.readline().split()))
+
+    # Вычисляем результат работы функции и записываем его в файл
+    result = labyrinth(graph, colors)
+    output_file.write(str(result))
