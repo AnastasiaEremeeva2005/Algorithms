@@ -1,0 +1,34 @@
+class Node: #Класс, который представляет вершину дерева
+    def __init__(self, key, left, right):
+        self.key = key #key — значение ключа узла
+        self.left = left #left  — индекс левого ребенка в массиве
+        self.right = right #right — индекс правого ребенка в массиве
+
+
+def tree_height(tree, node_index):
+    if node_index == 0:
+        return 0  # Если узла нет, высота 0
+    node = tree[node_index]
+    left_height = tree_height(tree, node.left)
+    right_height = tree_height(tree, node.right)
+    return max(left_height, right_height) + 1
+
+
+
+with open('input.txt', 'r') as f:
+        n = int(f.readline())  # Чтение числа вершин
+        tree = [None] * (n + 1)  # Массив для хранения вершин(на 1 больше, чем кол-во вершин,чтобы индексация начиналась с 1, так как вершины нумеруются с 1).
+
+        # Считываем вершины
+        for i in range(1, n + 1):
+            key, left, right = map(int, f.readline().split())
+            tree[i] = Node(key, left, right) #Создаём новый объект класса Node для каждой вершины с ключом, индексом левого и правого ребенка и сохраняем его в массив tree на соответствующей позиции.
+
+
+#Записываем ответ в файл
+end = open('output.txt', 'x')
+if n == 0: #Проверяем, есть ли в дереве вершины
+        end.write('0')
+else:
+    end.write(str(tree_height(tree, 1)))
+end.close()
